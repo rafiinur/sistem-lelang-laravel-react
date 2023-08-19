@@ -10,6 +10,17 @@ class History extends Model
     use HasFactory;
 
     protected $table = 'tb_history';
+    protected $fillable = [
+        'lelang_id',
+        'barang_id',
+        'user_id',
+        'penawaran'
+    ];
+    protected $with = [
+        'lelang',
+        'user',
+
+    ];
 
     public function lelang()
     {

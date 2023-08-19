@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\UserResource;
+use App\Http\Resources\BarangResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class LelangResource extends JsonResource
@@ -15,8 +17,9 @@ class LelangResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'barangId' => $this->barang_id,
-            'userId' => $this->user_id,
+            'id' => $this->id,
+            'barang' => new BarangResource($this->barang),
+            'user' => new UserResource($this->user),
             'tglLelang' => $this->tgl_lelang,
             'hargaAkhir' => $this->harga_akhir,
             'status' => $this->status

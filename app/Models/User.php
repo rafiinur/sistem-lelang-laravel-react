@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class User extends Authenticatable
 {
@@ -21,7 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'telp'
+        'telp',
+        'level'
     ];
 
     /**
@@ -46,5 +48,17 @@ class User extends Authenticatable
     public function lelang()
     {
         return $this->hasMany(Lelang::class);
+    }
+
+    public function histories()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function level(): Attribute
+    {
+        return new Attribute(
+            get: fn ($value) => ['user', 'petugas', 'admin'][$value]
+        );
     }
 }

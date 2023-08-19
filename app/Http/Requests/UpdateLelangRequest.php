@@ -13,7 +13,7 @@ class UpdateLelangRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,8 @@ class UpdateLelangRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'barang' => 'required',
+            'tgl_lelang' => 'required'
         ];
     }
 }

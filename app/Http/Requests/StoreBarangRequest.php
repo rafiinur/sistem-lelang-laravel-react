@@ -13,7 +13,7 @@ class StoreBarangRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,11 @@ class StoreBarangRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'nama' => 'required',
+            'tgl' => 'required',
+            'hargaAwal' => 'required',
+            'deskripsi' => 'required',
+            'gambar' => 'required|image|mimes:png,jpg,jpeg'
         ];
     }
 }

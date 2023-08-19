@@ -7,10 +7,18 @@ use App\Http\Requests\StoreBarangRequest;
 use App\Http\Requests\UpdateBarangRequest;
 use App\Http\Resources\BarangCollection;
 use App\Http\Resources\BarangResource;
+use App\Exports\BarangExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Inertia\Inertia;
+
 
 class BarangController extends Controller
 {
+    public function export()
+    {
+        return Excel::download(new BarangExport, 'barang.xlsx');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -19,7 +27,7 @@ class BarangController extends Controller
     public function index()
     {
         return Inertia::render('Barang', [
-            'barang' => new BarangCollection(Barang::paginate(8)),
+            'barang' => new BarangCollection(Barang::paginate(10)),
             'title' => 'List Barang',
         ]);
     }
@@ -31,7 +39,6 @@ class BarangController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**
@@ -42,7 +49,26 @@ class BarangController extends Controller
      */
     public function store(StoreBarangRequest $request)
     {
-        //
+        if (!$request->validated()) {
+            return back()->with([
+                'sucess' => false,
+                'message' => 'Form tidak di isi dengan benar'
+            ]);
+        }
+
+        $namaGambar = time() . '.' . $request->gambar->extension();
+
+        $request->gambar->move(public_path('assets/images'), $namaGambar);
+
+        Barang::create([
+            'nama' => $request->nama,
+            'tgl' => $request->tgl,
+            'harga_awal' => $request->hargaAwal,
+            'deskripsi' => $request->deskripsi,
+            'gambar' => $namaGambar
+        ]);
+
+        return back()->with(['success' => true, 'message' => 'Barang berhasil ditambahkan!']);
     }
 
     /**
@@ -67,7 +93,7 @@ class BarangController extends Controller
      */
     public function edit(Barang $barang)
     {
-        //
+        return with(['barang' => new BarangResource($barang)]);
     }
 
     /**
@@ -79,7 +105,32 @@ class BarangController extends Controller
      */
     public function update(UpdateBarangRequest $request, Barang $barang)
     {
-        //
+        if ($request->hasFile('gambar')) {
+            if (file_exists(public_path('assets/images/' . $barang->gambar))) {
+                unlink(public_path('assets/images/' . $barang->gambar));
+            }
+            $namaGambar = time() . '.' . $request->gambar->extension();
+
+            $request->gambar->move(public_path('assets/images'), $namaGambar);
+
+            $barang->update(([
+                'nama' => $request->nama,
+                'tgl' => $request->tgl,
+                'harga_awal' => $request->hargaAwal,
+                'deskripsi' => $request->deskripsi,
+                'gambar' => $namaGambar
+            ]));
+        }
+
+        $barang->update(([
+            'nama' => $request->nama,
+            'tgl' => $request->tgl,
+            'harga_awal' => $request->hargaAwal,
+            'deskripsi' => $request->deskripsi,
+        ]));
+
+
+        return back()->with(['success' => true, 'message' => 'Data berhasil diubah!']);
     }
 
     /**
@@ -90,6 +141,15 @@ class BarangController extends Controller
      */
     public function destroy(Barang $barang)
     {
-        //
+
+        if (file_exists(public_path('assets/images/' . $barang->gambar))) {
+            unlink(public_path('assets/images/' . $barang->gambar));
+        }
+
+        $barang->histories()->delete();
+        $barang->lelang()->delete();
+        $barang->delete();
+
+        return back()->with(['success' => true, 'message' => 'Data Berhasil Dihapus']);
     }
 }

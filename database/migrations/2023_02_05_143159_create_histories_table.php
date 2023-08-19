@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('tb_history', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('lelang_id')->references('id')->on('tb_lelang');
-            $table->foreignId('barang_id')->references('id')->on('tb_barang');
-            $table->foreignId('user_id')->references('id')->on('users');
-            $table->integer('penawaran_akhir');
+            $table->foreignId('lelang_id')->references('id')->on('tb_lelang')->onDelete('cascade');
+            $table->foreignId('barang_id')->references('id')->on('tb_barang')->onDelete('cascade');
+            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->integer('penawaran');
             $table->timestamps();
         });
     }

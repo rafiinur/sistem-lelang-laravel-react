@@ -17,7 +17,7 @@ class BarangFactory extends Factory
     public function definition()
     {
         return [
-            'nama' => fake()->randomElement(['Sepatu', 'Baju']),
+            'nama' => fake()->word(),
             'tgl' => fake()->dateTimeThisDecade(),
             'harga_awal' => fake()->numberBetween(100000, 300000),
             'deskripsi' => fake()->sentence(),

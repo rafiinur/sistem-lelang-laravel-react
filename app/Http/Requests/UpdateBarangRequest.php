@@ -13,7 +13,7 @@ class UpdateBarangRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,10 @@ class UpdateBarangRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'nama' => 'required',
+            'tgl' => 'required',
+            'hargaAwal' => 'required',
+            'deskripsi' => 'required'
         ];
     }
 }

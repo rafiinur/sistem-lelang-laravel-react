@@ -34,7 +34,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        if (auth()->user()->level == 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        if (auth()->user()->level == 'petugas') {
+            return redirect()->route('petugas.dashboard');
+        }
+
+        return redirect(RouteServiceProvider::HOME);
     }
 
     /**

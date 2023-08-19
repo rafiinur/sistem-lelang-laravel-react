@@ -6,9 +6,19 @@ use App\Models\Lelang;
 use App\Http\Requests\StoreLelangRequest;
 use App\Http\Requests\UpdateLelangRequest;
 use App\Http\Resources\LelangCollection;
+use App\Http\Resources\LelangResource;
+use App\Exports\LelangExport;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Inertia\Inertia;
 
 class LelangController extends Controller
 {
+    public function export()
+    {
+        return Excel::download(new LelangExport, 'lelang.xlsx');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +27,7 @@ class LelangController extends Controller
     public function index()
     {
         return Inertia::render('Lelang', [
-            'lelang' => new LelangCollection(Lelang::paginate()),
+            'listLelang' => new LelangCollection(Lelang::paginate(8)),
             'title' => 'List Lelang',
         ]);
     }
@@ -40,7 +50,16 @@ class LelangController extends Controller
      */
     public function store(StoreLelangRequest $request)
     {
-        //
+        if ($request->validated()) {
+            Lelang::create([
+                'barang_id' => $request->barang,
+                'tgl_lelang' => $request->tgl_lelang
+            ]);
+
+            return back()->with('message', 'Data berhasil Ditambahkan');
+        }
+
+        return back()->with('errors', 'Data gagal ditambahkan');
     }
 
     /**
@@ -51,7 +70,10 @@ class LelangController extends Controller
      */
     public function show(Lelang $lelang)
     {
-        //
+        return Inertia::render('Detail', [
+            'detail' => new LelangResource($lelang),
+            'title' => 'Detail Barang'
+        ]);
     }
 
     /**
@@ -62,7 +84,9 @@ class LelangController extends Controller
      */
     public function edit(Lelang $lelang)
     {
-        //
+        return with([
+            'lelang' => new LelangResource($lelang)
+        ]);
     }
 
     /**
@@ -74,7 +98,13 @@ class LelangController extends Controller
      */
     public function update(UpdateLelangRequest $request, Lelang $lelang)
     {
-        //
+        $lelang->update(([
+            'barang_id' => $request->barang,
+            'tgl_lelang' => $request->tgl_lelang
+        ]));
+
+
+        return back()->with(['success' => true, 'message' => 'Data berhasil diubah!']);
     }
 
     /**
@@ -85,6 +115,20 @@ class LelangController extends Controller
      */
     public function destroy(Lelang $lelang)
     {
-        //
+        $lelang->delete();
+
+        return back()->with(['success' => true, 'message' => 'Data Berhasil Diupdate!']);
+    }
+
+    public function updateStatus(Lelang $lelang, Request $request)
+    {
+        $lelang->update([
+            'status' => $request->status
+        ]);
+
+        return back()->with([
+            'success' => true,
+            'message' => 'Status Lelang Diubah'
+        ]);
     }
 }

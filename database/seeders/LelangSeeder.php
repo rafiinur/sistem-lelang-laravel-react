@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Lelang;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class LelangSeeder extends Seeder
 {
@@ -14,6 +15,10 @@ class LelangSeeder extends Seeder
      */
     public function run()
     {
-        //
+        Lelang::factory()
+            ->hasBarang()
+            ->hasUser()
+            ->count(50)
+            ->create();
     }
 }
